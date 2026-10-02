@@ -1,17 +1,20 @@
+from pathlib import Path
 import pandas as pd
 
-sales = pd.read_csv("sales.csv")
+BASE_DIR = Path(__file__).parent
+sales = pd.read_csv(BASE_DIR / "sales.csv")
+
+sales["total"] = sales["quantity"] * sales["price"]
+sales["date"] = pd.to_datetime(sales["date"])
+
 print("===== Виведіть в консоль перші 5 рядків =====")
 print(sales.head())
 print("\n===== Виведіть останні 5 рядків =====")
 print(sales.tail())
 print("\n===== Виведіть інформацію про таблицю за допомогою info() =====")
-print(sales.info)
+print(sales.info())
 print("\n===== Виведіть статистичну інформацію за допомогою describe() =====")
 print(sales.describe())
-
-sales["total"] = sales["quantity"] * sales["price"]
-sales["date"] = pd.to_datetime(sales["date"])
 
 total_sales_quantity = sales["quantity"].sum()
 total_sales_amount = sales["total"].sum()
@@ -40,3 +43,5 @@ category_statistics = sales.groupby("category").agg(
     average_sale=("total", "mean"))
 category_statistics["average_sale"] = category_statistics["average_sale"].round(2)
 print("\n",category_statistics)
+
+daily_sales = sales.groupby("date")["total"].sum()
